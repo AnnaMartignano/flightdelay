@@ -3,66 +3,33 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.DoubleType
+import org.apache.spark.sql.SQLContext
 
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
+import org.apache.log4j.{Level, Logger}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.mllib.evaluation.RegressionMetrics
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.types._
+import org.apache.spark.sql.types.DoubleType
 
-import scala.math.abs
-import scala.math.log
+import scala.math.{abs, log}
 
-import org.apache.spark.sql.SQLContext
-
-// COMMAND ----------
-
-val schema = new StructType()
-  .add("Year", IntegerType)
-  .add("Month", IntegerType)
-  .add("DayofMonth", IntegerType)
-  .add("DayOfWeek", IntegerType)
-  .add("DepTime", IntegerType)
-  .add("CRSDepTime", IntegerType)
-  .add("ArrTime", IntegerType)
-  .add("CRSArrTime", IntegerType)
-  .add("UniqueCarrier", StringType)
-  .add("FlightNum", IntegerType)
-  .add("TailNum", StringType)
-  .add("ActualElapsedTime", IntegerType)
-  .add("CRSElapsedTime", IntegerType)
-  .add("AirTime", IntegerType)
-  .add("ArrDelay", IntegerType)
-  .add("DepDelay", IntegerType)
-  .add("Origin", StringType)
-  .add("Dest", StringType)
-  .add("Distance", IntegerType)
-  .add("TaxiIn", IntegerType)
-  .add("TaxiOut", IntegerType)
-  .add("Cancelled", IntegerType)
-  .add("CancellationCode", StringType)
-  .add("Diverted", IntegerType)
-  .add("CarrierDelay", IntegerType)
-  .add("WeatherDelay", IntegerType)
-  .add("Sdelay", IntegerType)
-  .add("SecurityDelay", IntegerType)
-  .add("LateAircraftDelay", IntegerType)
+import org.apache.spark.sql.cassandra._
+import com.datastax.spark.connector._
+import com.datastax.driver.core.{Session, Cluster, Host, Metadata}
+import com.datastax.spark.connector.streaming._
 
 // COMMAND ----------
 
-// Loading Dataset:
-val sparkSes = SparkSession.builder().appName("Flight delay prediction").getOrCreate()
+val cluster = Cluster.builder().addContactPoint("127.0.0.1").build()
+val session = cluster.connect()
 val sqlContext = new SQLContext(sc)
-val csvfile = "/FileStore/tables/flights.csv"
-
-//Enforced Schema
-val dataFrame = sqlContext.read.option("inferSchema","false").option("header","true").schema(schema).csv(csvfile)
-
+val dataFrame = sqlContext.read
+         .format("org.apache.spark.sql.cassandra")
+         .options(Map( "table" -> "flights", "keyspace" -> "flightspace"))
+         .load()
 dataFrame.show
 dataFrame.count()
 
