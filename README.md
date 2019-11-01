@@ -1,6 +1,6 @@
 # :rotating_light: WARNING: This is a Data-Intensive Application :rotating_light:
 
-##Team Project for [ID2221 Course](https://id2221kth.github.io/) @KTH
+## Team Project for [ID2221 Course](https://id2221kth.github.io/) @KTH
 
 Authors: Anna Martignano and Muhammad Hamza Malik  
 
@@ -12,5 +12,5 @@ The methodology used to process this data consists in:
 4. Data analysis performed in [SparkSQL](https://spark.apache.org/sql/) and visualization performed with [Tableau](https://www.tableau.com/)
 5. Creation of the linear regression model and prediction of the Arrival Delay
 
-If you are interested in a detailed explanation, please have a look at the [report](/blob/master/Report.pdf).
+If you are interested in a detailed explanation, please have a look at the [report](https://github.com/AnnaMartignano/flightdelay/blob/master/Report.pdf).
 
